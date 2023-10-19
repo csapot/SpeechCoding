@@ -15,7 +15,7 @@ Usage in jupyter notebook:
 
 
 import numpy as np
-import audiolazy as al
+# import audiolazy as al
 import matplotlib.pyplot as plt
 import scipy.io.wavfile as io_wav
 from scipy import signal
@@ -43,8 +43,10 @@ def wavwrite(x, Fs, filename):
 #
 # x_new = resample(x, Fs_new, Fs_old)
 def resample(x, Fs_new, Fs_old):
-    x_out = al.resample(x, Fs_old, Fs_new)
-    return x_out.take(al.inf)
+    # x_out = al.resample(x, Fs_old, Fs_new)
+    # return x_out.take(al.inf)
+    x_out = signal.resample(x, int(len(x) * Fs_new / Fs_old))
+    return x_out
 
 
 # CCLIP performs center clipping of signal 
