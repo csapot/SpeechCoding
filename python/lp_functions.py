@@ -164,8 +164,8 @@ def wavplot(x, Fs, ipython = True):
         return IPython.display.Audio(x, rate=Fs)
     else:
         x_scaled = np.int16(x / np.max(np.abs(x)) * 32767)
-        with al.AudioIO(True) as player: # True means "wait for all sounds to stop"
-            player.play(x_scaled, rate=Fs)
+        #with al.AudioIO(True) as player: # True means "wait for all sounds to stop"
+        #    player.play(x_scaled, rate=Fs)
             
     
 # SOUNDSC Plays speech
@@ -185,8 +185,9 @@ def soundsc(x, Fs):
 #   such that the sum of the squares of the errors
 #   err(n) = X(n) - Xp(n)
 def lpc(x, p = 12):
-    alpha = al.lpc.autocor(x, p)
-    return alpha
+    # alpha = al.lpc.autocor(x, p)
+    lpc_coeffs = signal.lpc(x, p)
+    return lpc_coeffs
 
 
 # FILTER filter signals
@@ -216,16 +217,23 @@ def norm(x):
     return rms
 
 
-# LOWPASS designs a lowpass filter
+# APPLY_LOWPASS designs and applies a lowpass filter
 #
-# filt = lowpass(cutoff, Fs)
+# signal_lfiltered = apply_lowpass(signal_in, cutoff, Fs)
 #
+# signal        input signal
 # cutoff        filter cutoff frequency (Hz)
 # Fs            sampling frequency (Hz)
-def lowpass(cutoff, Fs):
-    filt = al.lowpass.pole(cutoff / Fs)
-    return filt
+def apply_lowpass(signal_in, cutoff, Fs):
+    # Define filter parameters    
+    order = 4  # Filter order
 
+    # Create filter coefficients
+    sos = signal.butter(order, cutoff, btype='highpass', fs=Fs, output='sos')
+
+    # Apply filter to signal
+    signal_filtered = signal.sosfiltfilt(sos, signal_in)
+    return signal_filtered
 
 # MEDFILT1 median filter
 #
